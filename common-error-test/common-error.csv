@@ -1,3 +1,0 @@
-code,template,args,desc
-SYS00001,"sys error {}",code,"zheshi yige xiaoxiao de wenti "
-SYS00002,"file {} open file error info : {}",file_name-msg,true

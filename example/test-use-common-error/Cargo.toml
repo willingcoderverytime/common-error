@@ -1,0 +1,12 @@
+[package]
+name = "test-use-common-error"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[build-dependencies]
+
+common-error-build={version = "0.1.0",path = "../../common-error-build"}
+
+[dependencies]
+common-error={version = "0.1.0",path = "../../common-error"}
