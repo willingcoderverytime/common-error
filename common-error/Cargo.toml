@@ -1,0 +1,12 @@
+[package]
+name = "common-error"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+homepage = "https://github.com/willingcoderverytime/common-error/"
+description = "High performance universal error code management for Rust in Rust."
+license = "Apache 2.0"
+authors = ["Wang li li  <249639015@qq.com>"]
+[lib]
+name = "common_error"
+
