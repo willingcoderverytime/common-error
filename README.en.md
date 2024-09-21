@@ -54,6 +54,12 @@ common-error = "0.1.0"
 Step 2: Call the `error_build` function in the build script.
 Step 3: Maintain your common-error.csv file.
 Step 4: Include the `_common_error` mod in your crate.
+```chatinput
+struct LOC00007;
+fn main(){
+    common_error::handle_error!(result: Result::Ok(""), etype: LOC00007, "x".clone() ,"y".clone());
+}
+```
 
 ## License
 

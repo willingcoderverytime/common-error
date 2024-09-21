@@ -1,3 +1,6 @@
+
+pub mod handle_error_macro;
+
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 
