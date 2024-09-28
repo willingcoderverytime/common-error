@@ -1,5 +1,6 @@
 
 pub mod handle_error_macro;
+pub mod handle_await_macro;
 
 use std::error::Error;
 use std::fmt::{Display, Formatter};
@@ -15,5 +16,6 @@ impl Display for CommonError {
         write!(f, "error code [{}]:{} \n", self.code, self.message)
     }
 }
+
 
 impl Error for CommonError {}
