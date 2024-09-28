@@ -10,6 +10,9 @@ use syn::Ident;
 
 use crate::read_csv::{ErrorInfo, read_csv_with_serde};
 
+const CSV_FILE_NAME: &str = "common-error.csv";
+const JSON_FILE_NAME: &str = "common-error.json";
+
 pub fn error_build() {
     let dest_path = Path::new("src").join("_common_error.rs");
 
@@ -17,14 +20,40 @@ pub fn error_build() {
         fs::remove_file(dest_path.clone()).unwrap();
     }
 
+    let path = Path::new(".");
 
-    let vec = match read_csv_with_serde("common-error.csv") {
-        Ok(re) => re,
-        Err(e) => {
-            eprintln!("red file error {}", e);
-            return;
+    let dir = fs::read_dir(path).unwrap();
+
+    let mut vec: Vec<ErrorInfo> = Vec::new();
+    for dir_re in dir {
+        if let Ok(dir_entry) = dir_re {
+            match dir_entry.file_name().to_str() {
+                None => {}
+                Some(name) => {
+                    if name.ends_with(CSV_FILE_NAME) {
+                        vec = match read_csv_with_serde() {
+                            Ok(re) => re,
+                            Err(e) => {
+                                eprintln!("red csv file error {}", e);
+                                return;
+                            }
+                        };
+                        break;
+                    } else if name.ends_with(JSON_FILE_NAME) {
+                        vec = match read_csv_with_serde() {
+                            Ok(re) => re,
+                            Err(e) => {
+                                eprintln!("red json file error {}", e);
+                                return;
+                            }
+                        };
+                        break;
+                    }
+                }
+            }
         }
-    };
+    }
+
 
     let mut file_content = String::from("extern crate common_error; \n \n");
     let temp_reg = Regex::new(r"(\{[^{}]*\})").unwrap();
@@ -209,9 +238,11 @@ fn expand_args_template(code: String, desc: String, templates: Vec<&str>, args: 
 mod read_csv {
     use std::error::Error;
     use std::fs::File;
+    use std::io::BufReader;
 
     use csv::Reader;
     use serde::Deserialize;
+    use crate::{CSV_FILE_NAME, JSON_FILE_NAME};
 
     #[derive(Deserialize, Debug)]
     pub(crate) struct ErrorInfo {
@@ -221,8 +252,8 @@ mod read_csv {
         pub args: String,
     }
 
-    pub(crate) fn read_csv_with_serde(file_path: &str) -> Result<Vec<ErrorInfo>, Box<dyn Error>> {
-        let file = File::open(file_path)?;
+    pub(crate) fn read_csv_with_serde() -> Result<Vec<ErrorInfo>, Box<dyn Error>> {
+        let file = File::open(CSV_FILE_NAME)?;
         let mut rdr = Reader::from_reader(file);
         let mut vec = Vec::new();
         for result in rdr.deserialize() {
@@ -230,6 +261,13 @@ mod read_csv {
             vec.push(record);
         }
         Ok(vec)
+    }
+
+    pub(crate) fn read_json_with_serde() -> Result<Vec<ErrorInfo>, Box<dyn Error>> {
+        let file = File::open(JSON_FILE_NAME)?;
+        let reader = BufReader::new(file);
+        let result:Vec<ErrorInfo> = serde_json::from_reader(reader).unwrap();
+        Ok(result)
     }
 }
 
